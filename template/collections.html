@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1 id="ManageCollectionBackoffice">Manage Collections</h1>
-    <button onclick="showCollectionCreateForm()">Create New Collection</button>
+    <h1 id="ManageCollectionsBackoffice">Manage Collections</h1>
+    <button onclick="showCollectionCreateForm()" id="createButton">Create New Collection</button>
     <table id="collectionsTable">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Collection ID</th>
                 <th>Merchant ID</th>
-                <th>Date</th>
+                <th>Collection Date</th>
                 <th>Total Items</th>
                 <th>Status</th>
                 <th>Created At</th>
@@ -23,24 +23,49 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Rows will be added here -->
         </tbody>
     </table>
 
-    <div id="collectionFormContainer" style="display:none;">
-        <h2 id="formTitle">Create Collection</h2>
-        <form id="collectionForm" onsubmit="handleCollectionFormSubmit(event)">
-            <input type="hidden" id="collectionId" name="collectionId">
+    <div id="collectionFormContainer" style="display: none">
+        <h2 id="formTitle"></h2>
+        <form id="collectionForm">
+            <input type="hidden" id="collectionId" name="collectionId" />
             <label for="merchant_id">Merchant ID:</label>
-            <input type="number" id="merchant_id" name="merchant_id" required><br>
-            <label for="collection_date">Date:</label>
-            <input type="date" id="collection_date" name="collection_date" required><br>
+            <select id="merchant_id" name="merchant_id" required></select>
+            <label for="collection_date">Collection Date:</label>
+            <input type="date" id="collection_date" name="collection_date" required />
             <label for="total_items">Total Items:</label>
-            <input type="number" id="total_items" name="total_items" required><br>
+            <input type="number" id="total_items" name="total_items" required />
             <label for="status">Status:</label>
-            <input type="text" id="status" name="status"><br>
+            <select id="status" name="status">
+                <option value="0">Pending</option>
+                <option value="1">Delivered</option>
+            </select>
             <button type="submit" id="formSubmitButton">Create</button>
         </form>
-    </div>    
+    </div>
+
+    <div id="updateStatusContainer" style="display: none">
+        <h2>Update Status</h2>
+        <form id="updateStatusForm">
+            <input type="hidden" id="statusCollectionId" name="statusCollectionId" />
+            <label for="statusUpdate">Status:</label>
+            <select id="statusUpdate" name="statusUpdate">
+                <option value="0">Pending</option>
+                <option value="1">Delivered</option>
+            </select>
+            <button type="submit" id="statusUpdateButton">Update Status</button>
+        </form>
+    </div>
+
+    <select id="languageSelect">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="es">Español</option>
+        <option value="it">Italiano</option>
+    </select>
 
     <script src="../js/collections.js"></script>
 </body>

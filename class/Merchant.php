@@ -18,7 +18,7 @@ class Merchant {
 
     // Create Merchant
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " SET name=:name, address=:address, phone=:phone, email=:email, membership_start_date=:membership_start_date, membership_end_date=:membership_end_date, renewal_reminder_sent=:renewal_reminder_sent";
+        $query = "INSERT INTO " . $this->table_name . " (name, address, phone, email, membership_start_date, ) :name, :address, =:phone, =:email, =:membership_start_date, membership_end_date=:membership_end_date, renewal_reminder_sent=:renewal_reminder_sent";
         $stmt = $this->conn->prepare($query);
 
         // sanitize

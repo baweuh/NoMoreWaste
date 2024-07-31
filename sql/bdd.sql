@@ -1,5 +1,7 @@
 CREATE DATABASE fight_food_waste;
 
+USE fight_food_waste;
+
 CREATE TABLE Commercants (
     merchant_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -17,6 +19,8 @@ CREATE TABLE Collectes (
     collection_date DATE NOT NULL,
     total_items INT,
     status VARCHAR(50),
+    created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (merchant_id) REFERENCES Commercants(merchant_id)
 );
 
@@ -36,6 +40,13 @@ CREATE TABLE Stocks (
     quantity INT,
     location VARCHAR(255),
     FOREIGN KEY (product_id) REFERENCES Produits(product_id)
+);
+
+CREATE TABLE Clients (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(15)
 );
 
 CREATE TABLE Tournees (
@@ -64,13 +75,6 @@ CREATE TABLE Benevoles (
     status VARCHAR(50)
 );
 
-CREATE TABLE Clients (
-    customer_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(15),
-);
-
 CREATE TABLE Benevoles_Services (
     assignment_id INT AUTO_INCREMENT PRIMARY KEY,
     volunteer_id INT NOT NULL,
@@ -78,7 +82,7 @@ CREATE TABLE Benevoles_Services (
     task VARCHAR(255),
     date DATE,
     status VARCHAR(50),
-    FOREIGN KEY (volunteer_id) REFERENCES Benevoles(volunteer_id)
+    FOREIGN KEY (volunteer_id) REFERENCES Benevoles(volunteer_id),
     FOREIGN KEY (service_id) REFERENCES Services(service_id)
 );
 

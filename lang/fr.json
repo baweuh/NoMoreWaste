@@ -1,0 +1,16 @@
+{
+    "title": "Gérer les Langues",
+    "create_language": "Créer une Nouvelle Langue",
+    "language_id": "ID de Langue",
+    "language_code": "Code de Langue",
+    "language_name": "Français",
+    "language_title": "Nom de Langue",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "form_title_create": "Créer une Langue",
+    "form_title_edit": "Modifier la Langue",
+    "submit_create": "Créer",
+    "submit_update": "Mettre à jour",
+    "delete_confirmation": "Êtes-vous sûr de vouloir supprimer cette langue ?"
+}

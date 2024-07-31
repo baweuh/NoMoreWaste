@@ -1,0 +1,16 @@
+{
+    "title": "Manage Languages",
+    "create_language": "Create New Language",
+    "language_id": "Language ID",
+    "language_code": "Language Code",
+    "language_name": "English",
+    "language_title": "Language Title",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "form_title_create": "Create Language",
+    "form_title_edit": "Edit Language",
+    "submit_create": "Create",
+    "submit_update": "Update",
+    "confirm_delete": "Are you sure you want to delete this language?"
+}

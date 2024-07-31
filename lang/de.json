@@ -1,0 +1,15 @@
+{
+    "title": "Sprachen Verwalten",
+    "create_language": "Neue Sprache Erstellen",
+    "language_id": "Sprachen ID",
+    "language_code": "Sprachcode",
+    "language_name": "Deutsch",
+    "language_title": "Sprachtitel",
+    "actions": "Aktionen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "form_title_create": "Sprache Erstellen",
+    "form_title_edit": "Sprache Bearbeiten",
+    "submit_create": "Erstellen",
+    "submit_update": "Aktualisieren"
+}

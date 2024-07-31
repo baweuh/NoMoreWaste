@@ -49,7 +49,7 @@ class Collection
     // Créer une nouvelle collecte
     public function create()
     {
-        $query = "INSERT INTO " . $this->table_name . " SET merchant_id=:merchant_id, collection_date=:collection_date, total_items=:total_items, status=:status";
+        $query = "INSERT INTO " . $this->table_name . " (merchant_id, collection_date, total_items, status) VALUES (:merchant_id, :collection_date, :total_items, :status)";
         $stmt = $this->conn->prepare($query);
 
         // Sécuriser les données

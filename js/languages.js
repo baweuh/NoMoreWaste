@@ -15,7 +15,7 @@ function loadLanguage(lang) {
 
 // Fonction pour mettre à jour les textes de la page en fonction des traductions chargées
 function updatePageTexts() {
-    const pageTitleElement = document.getElementById("pageTitle");
+    const ManageLanguagesBackoffice = document.getElementById("ManageLanguagesBackoffice");
     const createButtonElement = document.getElementById("createButton");
     const languageCodeHeader = document.getElementById("languageCodeHeader");
     const languageTitleHeader = document.getElementById("languageTitleHeader");
@@ -24,10 +24,8 @@ function updatePageTexts() {
     const languageNameLabel = document.getElementById("languageNameLabel");
     const languageContentLabel = document.getElementById("languageContentLabel");
     const formSubmitButton = document.getElementById("formSubmitButton");
-    const Edit = document.getElementById("Edit");
-    const Delete = document.getElementById("Delete");
 
-    if (pageTitleElement) pageTitleElement.innerText = translations.title || 'Manage Languages';
+    if (ManageLanguagesBackoffice) ManageLanguagesBackoffice.innerText = translations.title || 'Manage Languages';
     if (createButtonElement) createButtonElement.innerText = translations.create_language || 'Create New Language';
 
     if (languageCodeHeader) languageCodeHeader.innerText = translations.language_code || 'Language Code';
@@ -36,11 +34,8 @@ function updatePageTexts() {
 
     if (formTitleElement) formTitleElement.innerText = translations.form_title_create || 'Create Language';
     if (languageNameLabel) languageNameLabel.innerText = translations.language_name || 'Language Name';
-    if (languageContentLabel) languageContentLabel.innerText = translations.language_content || 'Content (JSON):';
+    if (languageContentLabel) languageContentLabel.innerText = translations.language_content || 'Content';
     if (formSubmitButton) formSubmitButton.innerText = translations.submit_create || 'Create';
-    
-    if (Edit) Edit.innerText = translations.edit || 'Edit';
-    if (Delete) Delete.innerText = translations.delete || 'Delete';
 }
 
 // Fonction pour charger les langues depuis le serveur
@@ -48,11 +43,9 @@ function loadLanguages() {
     fetch("../api/languages.php")
         .then(response => response.json())
         .then(data => {
-            console.log("Data from API:", data); // Ajoutez ceci pour déboguer
             const tableBody = document.getElementById("languagesTableBody");
             tableBody.innerHTML = "";
 
-            // Assurez-vous que la structure des données est correcte
             if (Array.isArray(data)) {
                 data.forEach(language => {
                     const row = document.createElement("tr");
@@ -60,8 +53,8 @@ function loadLanguages() {
                         <td>${language.code}</td>
                         <td>${language.name}</td>
                         <td>
-                            <button id="Edit" onclick="editLanguage('${language.code}')">${translations.edit}</button>
-                            <button id="Delete" onclick="deleteLanguage('${language.code}')">${translations.delete}</button>
+                            <button onclick="editLanguage('${language.code}')">${translations.edit || 'Edit'}</button>
+                            <button onclick="deleteLanguage('${language.code}')">${translations.delete || 'Delete'}</button>
                         </td>
                     `;
                     tableBody.appendChild(row);
@@ -76,45 +69,80 @@ function loadLanguages() {
 // Fonction pour afficher le formulaire de création de langue
 function showLanguageCreateForm() {
     const formTitleElement = document.getElementById("formTitle");
-    const formElement = document.getElementById("languageForm");
     const languageFormContainer = document.getElementById("languageFormContainer");
+    const formElement = document.getElementById("languageForm");
 
     if (formTitleElement) {
         formTitleElement.innerText = translations.form_title_create || 'Create Language';
     }
-    if (formElement) {
-        formElement.reset();
-        document.getElementById("languageCode").value = "";
-        document.getElementById("languageName").value = "";
-        document.getElementById("languageContent").value = "{}";
-        if (document.getElementById("formSubmitButton")) {
-            document.getElementById("formSubmitButton").innerText = translations.submit_create || 'Create';
-        }
-    }
+
+    formElement.innerHTML = '<input type="hidden" id="languageCode" name="languageCode" />'; // Reset form
+
+    // Ajout des éléments du formulaire dynamiquement
+    addFormElements({}, true);
+    document.getElementById("formSubmitButton").innerText = translations.submit_create || 'Create';
+    
     if (languageFormContainer) {
         languageFormContainer.style.display = "block";
     }
+}
+
+// Fonction pour ajouter dynamiquement des éléments du formulaire
+function addFormElements(content, isNew = false) {
+    const formElement = document.getElementById("languageForm");
+    const submitButton = document.createElement("button");
+    submitButton.type = "submit";
+    submitButton.id = "formSubmitButton";
+    submitButton.innerText = isNew ? (translations.submit_create || 'Create') : (translations.submit_update || 'Update');
+
+    // Vérifier que content est un objet
+    if (typeof content === 'object' && content !== null) {
+        for (const [key, value] of Object.entries(content)) {
+            const label = document.createElement("label");
+            label.htmlFor = key;
+            label.innerText = key;
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.id = key;
+            input.name = key;
+            input.value = value;
+
+            formElement.appendChild(label);
+            formElement.appendChild(input);
+        }
+    } else {
+        console.warn('Content is not a valid object:', content);
+    }
+    formElement.appendChild(submitButton);
 }
 
 // Fonction pour gérer la soumission du formulaire de langue
 function handleLanguageFormSubmit(event) {
     event.preventDefault();
 
-    const formData = {
+    const formData = new FormData(event.target);
+    const data = {};
+    formData.forEach((value, key) => {
+        if (key !== "languageCode") {
+            data[key] = value;
+        }
+    });
+
+    const jsonData = {
         code: document.getElementById("languageCode").value,
-        name: document.getElementById("languageName").value,
-        content: JSON.parse(document.getElementById("languageContent").value)
+        content: data
     };
 
-    const method = formData.code ? "PUT" : "POST";
-    const url = "../api/languages.php" + (formData.code ? `?code=${formData.code}` : "");
+    const method = jsonData.code ? "PUT" : "POST";
+    const url = "../api/languages.php" + (jsonData.code ? `?code=${jsonData.code}` : "");
 
     fetch(url, {
         method: method,
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(jsonData)
     })
     .then(response => response.json())
     .then(data => {
@@ -129,11 +157,15 @@ function editLanguage(code) {
     fetch(`../api/languages.php?code=${code}`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("formTitle").innerText = translations.form_title_edit || 'Edit Language';
-            document.getElementById("languageCode").value = code;
-            document.getElementById("languageName").value = data.language_name || '';
-            document.getElementById("languageContent").value = JSON.stringify(data.content || {}, null, 2);
-            document.getElementById("formSubmitButton").innerText = translations.submit_update || 'Update';
+            const formTitleElement = document.getElementById("formTitle");
+            formTitleElement.innerText = translations.form_title_edit || 'Edit Language';
+
+            const formElement = document.getElementById("languageForm");
+            formElement.innerHTML = '<input type="hidden" id="languageCode" name="languageCode" value="' + code + '" />';
+
+            // Ajout des éléments du formulaire dynamiquement
+            addFormElements(data.content || {}, false);
+            
             document.getElementById("languageFormContainer").style.display = "block";
         })
         .catch(error => console.error("Error:", error));

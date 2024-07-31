@@ -43,7 +43,7 @@ class VolunteerAssignment
 
     public function create()
     {
-        $query = "INSERT INTO " . $this->table_name . " (volunteer_id, service_id, task, date, status)  VALUES (:volunteer_id,  :service_id, :task,  :date, :status)";
+        $query = "INSERT INTO " . $this->table_name . " (volunteer_id, service_id, task, date, status) VALUES (:volunteer_id,  :service_id, :task,  :date, :status)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':volunteer_id', $this->volunteer_id);

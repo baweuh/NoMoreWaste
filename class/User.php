@@ -38,7 +38,7 @@ class User
 
     public function create()
     {
-        $query = "INSERT INTO " . $this->table_name . " SET username = :username, password = :password, role = :role";
+        $query = "INSERT INTO " . $this->table_name . " (username, password, role) VALUES (:username, :password, :role)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':username', $this->username);

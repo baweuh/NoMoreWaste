@@ -34,7 +34,7 @@ class Stock {
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " SET product_id=:product_id, quantity=:quantity, location=:location";
+        $query = "INSERT INTO " . $this->table_name . " (product_id, quantity, location) VALUES (:product_id, :quantity, :location)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(":product_id", $this->product_id);

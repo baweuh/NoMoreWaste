@@ -3,7 +3,7 @@ let translations = {}; // Conteneur pour les traductions
 
 // Fonction pour charger les traductions d'une langue donnée
 function loadLanguage(lang) {
-    fetch(`../lang/${lang}.json`)
+    fetch(`../../../../lang/${lang}.json`)
         .then(response => response.json())
         .then(data => {
             translations = data;
@@ -40,7 +40,7 @@ function updatePageTexts() {
 
 // Fonction pour charger les langues depuis le serveur
 function loadLanguages() {
-    fetch("../api/languages.php")
+    fetch("../../../../api/languages.php")
         .then(response => response.json())
         .then(data => {
             const tableBody = document.getElementById("languagesTableBody");
@@ -135,7 +135,7 @@ function handleLanguageFormSubmit(event) {
     };
 
     const method = jsonData.code ? "PUT" : "POST";
-    const url = "../api/languages.php" + (jsonData.code ? `?code=${jsonData.code}` : "");
+    const url = "../../../../api/languages.php" + (jsonData.code ? `?code=${jsonData.code}` : "");
 
     fetch(url, {
         method: method,
@@ -154,7 +154,7 @@ function handleLanguageFormSubmit(event) {
 
 // Fonction pour éditer une langue
 function editLanguage(code) {
-    fetch(`../api/languages.php?code=${code}`)
+    fetch(`../../../../api/languages.php?code=${code}`)
         .then(response => response.json())
         .then(data => {
             const formTitleElement = document.getElementById("formTitle");
@@ -174,7 +174,7 @@ function editLanguage(code) {
 // Fonction pour supprimer une langue
 function deleteLanguage(code) {
     if (confirm(translations.confirm_delete || "Are you sure you want to delete this language?")) {
-        fetch(`../api/languages.php?code=${code}`, {
+        fetch(`../../../../api/languages.php?code=${code}`, {
             method: "DELETE"
         })
         .then(response => response.json())

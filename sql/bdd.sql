@@ -16,6 +16,7 @@ CREATE TABLE Commercants (
 CREATE TABLE Collectes (
     collection_id INT AUTO_INCREMENT PRIMARY KEY,
     merchant_id INT NOT NULL,
+    name VARCHAR(30),
     collection_date DATE NOT NULL,
     total_items INT,
     status VARCHAR(50),
@@ -51,12 +52,11 @@ CREATE TABLE Clients (
 
 CREATE TABLE Tournees (
     delivery_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT NOT NULL,
     delivery_date DATE NOT NULL,
     recipient_type VARCHAR(50),
-    recipient_id INT,
+    customer_id INT,
     status VARCHAR(50),
-    pdf_report BLOB,
+    pdf_report_path TEXT,
     FOREIGN KEY (customer_id) REFERENCES Clients(customer_id)
 );
 
@@ -91,4 +91,15 @@ CREATE TABLE Users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Panier (
+  `panier_id` int NOT NULL AUTO_INCREMENT,
+  `customer_id` int DEFAULT NULL,
+  `product_id` int DEFAULT NULL,
+  `quantity` int DEFAULT '1',
+  `added_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`panier_id`),
+  KEY `customer_id` (`customer_id`),
+  KEY `product_id` (`product_id`)
 );

@@ -18,7 +18,7 @@ class Merchant {
 
     // Create Merchant
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " (name, address, phone, email, membership_start_date, ) :name, :address, =:phone, =:email, =:membership_start_date, membership_end_date=:membership_end_date, renewal_reminder_sent=:renewal_reminder_sent";
+        $query = "INSERT INTO " . $this->table_name . " (name, address, phone, email, membership_start_date, membership_end_date, renewal_reminder_sent) VALUES (:name, :address, :phone, :email, :membership_start_date, :membership_end_date, :renewal_reminder_sent)";
         $stmt = $this->conn->prepare($query);
 
         // sanitize
@@ -53,17 +53,7 @@ class Merchant {
         $stmt->bindParam(1, $this->merchant_id);
         $stmt->execute();
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($row) {
-            $this->name = $row['name'];
-            $this->address = $row['address'];
-            $this->phone = $row['phone'];
-            $this->email = $row['email'];
-            $this->membership_start_date = $row['membership_start_date'];
-            $this->membership_end_date = $row['membership_end_date'];
-            $this->renewal_reminder_sent = $row['renewal_reminder_sent'];
-        }
+        return $stmt;
     }
 
     // Update Merchant

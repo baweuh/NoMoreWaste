@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function loadServices() {
-  fetch("../api/services.php")
+  fetch("../../api/services.php")
     .then((response) => response.json())
     .then((data) => {
       console.log("Loaded services:", data);
@@ -53,7 +53,7 @@ function handleServiceFormSubmit(event) {
 
   const method = formData.service_id ? "PUT" : "POST";
   const url =
-    "../api/services.php" +
+    "../../api/services.php" +
     (formData.service_id ? `?id=${formData.service_id}` : "");
 
   fetch(url, {
@@ -72,7 +72,7 @@ function handleServiceFormSubmit(event) {
 }
 
 function editService(id) {
-  fetch(`../api/services.php?id=${id}`)
+  fetch(`../../api/services.php?id=${id}`)
     .then((response) => response.json())
     .then((data) => {
       document.getElementById("formTitle").innerText = "Edit Service";
@@ -87,7 +87,7 @@ function editService(id) {
 
 function deleteService(id) {
   if (confirm("Are you sure you want to delete this service?")) {
-    fetch(`../api/services.php?id=${id}`, {
+    fetch(`../../api/services.php?id=${id}`, {
       method: "DELETE",
     })
       .then((response) => response.json())

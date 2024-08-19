@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Fonction pour charger les commerçants depuis le serveur
 function loadMerchants() {
-  fetch("../api/merchants.php")
+  fetch("../../api/merchants.php")
     .then((response) => response.json())
     .then((data) => {
       const merchantSelect = document.getElementById("merchant_id");
@@ -35,7 +35,7 @@ function loadMerchants() {
 
 // Fonction pour charger les collections depuis le serveur
 function loadCollections() {
-  fetch("../api/collections.php")
+  fetch("../../api/collections.php")
     .then((response) => response.json())
     .then((data) => {
       const tableBody = document.querySelector("#collectionsTable tbody");
@@ -102,7 +102,7 @@ function handleCollectionFormSubmit(event) {
   const id = formData.collection_id;
   const method = id ? "PUT" : "POST";
 
-  fetch(`../api/collections.php${id ? `?id=${id}` : ""}`, {
+  fetch(`../../api/collections.php${id ? `?id=${id}` : ""}`, {
     method: method,
     headers: {
       "Content-Type": "application/json",
@@ -128,7 +128,7 @@ function handleCollectionFormSubmit(event) {
 }
 
 function editCollection(id) {
-  fetch(`../api/collections.php?id=${id}`)
+  fetch(`../../api/collections.php?id=${id}`)
     .then((response) => response.json())
     .then((data) => {
       const formTitle = document.getElementById("formTitle");
@@ -158,7 +158,7 @@ function editCollection(id) {
 }
 
 function deleteCollection(id) {
-  fetch(`../api/collections.php?id=${id}`, {
+  fetch(`../../api/collections.php?id=${id}`, {
     method: "DELETE",
   })
     .then((response) => response.json())
@@ -193,7 +193,7 @@ function handleStatusUpdateFormSubmit(event) {
     status: document.getElementById("statusUpdate").value,
   };
 
-  fetch(`../api/collections.php?id=${statusData.collection_id}`, {
+  fetch(`../../api/collections.php?id=${statusData.collection_id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

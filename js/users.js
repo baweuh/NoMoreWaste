@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function loadUsers() {
-  fetch("../api/users.php")
+  fetch("../../api/users.php")
     .then((response) => response.json())
     .then((data) => {
       console.log("Loaded users:", data);
@@ -56,7 +56,7 @@ function handleUserFormSubmit(event) {
 
   const method = formData.user_id ? "PUT" : "POST";
   const url =
-    "../api/users.php" +
+    "../../api/users.php" +
     (formData.user_id ? `?id=${formData.user_id}` : "");
 
   fetch(url, {
@@ -75,7 +75,7 @@ function handleUserFormSubmit(event) {
 }
 
 function editUser(id) {
-  fetch(`../api/users.php?id=${id}`)
+  fetch(`../../api/users.php?id=${id}`)
     .then((response) => response.json())
     .then((data) => {
       document.getElementById("formTitle").innerText = "Edit User";
@@ -90,7 +90,7 @@ function editUser(id) {
 
 function deleteUser(id) {
   if (confirm("Are you sure you want to delete this user?")) {
-    fetch(`../api/users.php?id=${id}`, {
+    fetch(`../../api/users.php?id=${id}`, {
       method: "DELETE",
     })
       .then((response) => response.json())

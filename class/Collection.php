@@ -7,6 +7,7 @@ class Collection
     // Propriétés
     public $collection_id;
     public $merchant_id;
+    public $name;
     public $collection_date;
     public $total_items;
     public $status;
@@ -28,6 +29,15 @@ class Collection
         return $stmt;
     }
 
+    public function readByMerchantId($merchant_id)
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE merchant_id = ? ORDER BY collection_date DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $merchant_id);
+        $stmt->execute();
+        return $stmt;
+    }
+
     // Lire une collecte spécifique
     public function readOne()
     {
@@ -38,6 +48,7 @@ class Collection
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) {
             $this->merchant_id = $row['merchant_id'];
+            $this->name = $row['name'];
             $this->collection_date = $row['collection_date'];
             $this->total_items = $row['total_items'];
             $this->status = $row['status'];
@@ -49,17 +60,19 @@ class Collection
     // Créer une nouvelle collecte
     public function create()
     {
-        $query = "INSERT INTO " . $this->table_name . " (merchant_id, collection_date, total_items, status) VALUES (:merchant_id, :collection_date, :total_items, :status)";
+        $query = "INSERT INTO " . $this->table_name . " (merchant_id, name, collection_date, total_items, status) VALUES (:merchant_id, :name, :collection_date, :total_items, :status)";
         $stmt = $this->conn->prepare($query);
 
         // Sécuriser les données
         $this->merchant_id = htmlspecialchars(strip_tags($this->merchant_id));
+        $this->name = htmlspecialchars(strip_tags($this->name));
         $this->collection_date = htmlspecialchars(strip_tags($this->collection_date));
         $this->total_items = htmlspecialchars(strip_tags($this->total_items));
         $this->status = htmlspecialchars(strip_tags($this->status));
 
         // Lier les paramètres
         $stmt->bindParam(":merchant_id", $this->merchant_id);
+        $stmt->bindParam(":name", $this->name);
         $stmt->bindParam(":collection_date", $this->collection_date);
         $stmt->bindParam(":total_items", $this->total_items);
         $stmt->bindParam(":status", $this->status);
@@ -75,13 +88,14 @@ class Collection
     public function update()
     {
         $query = "UPDATE collectes
-                  SET merchant_id = :merchant_id, collection_date = :collection_date, total_items = :total_items, status = :status
+                  SET merchant_id = :merchant_id, name = :name, collection_date = :collection_date, total_items = :total_items, status = :status
                   WHERE collection_id = :collection_id";
 
         $stmt = $this->conn->prepare($query);
 
         // Nettoyer les données
         $this->merchant_id = htmlspecialchars(strip_tags($this->merchant_id));
+        $this->name = htmlspecialchars(strip_tags($this->name));
         $this->collection_date = htmlspecialchars(strip_tags($this->collection_date));
         $this->total_items = htmlspecialchars(strip_tags($this->total_items));
         $this->status = htmlspecialchars(strip_tags($this->status));
@@ -89,6 +103,7 @@ class Collection
 
         // Lier les variables
         $stmt->bindParam(':merchant_id', $this->merchant_id);
+        $stmt->bindParam(':name', $this->name);
         $stmt->bindParam(':collection_date', $this->collection_date);
         $stmt->bindParam(':total_items', $this->total_items);
         $stmt->bindParam(':status', $this->status);

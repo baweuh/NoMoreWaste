@@ -27,6 +27,7 @@ switch ($method) {
                 $collection_arr = array(
                     "collection_id" => $collection->collection_id,
                     "merchant_id" => $collection->merchant_id,
+                    "name" => $collection->name,
                     "collection_date" => $collection->collection_date,
                     "total_items" => $collection->total_items,
                     "status" => $collection->status,
@@ -49,6 +50,7 @@ switch ($method) {
                     $collection_item = array(
                         "collection_id" => $row['collection_id'],
                         "merchant_id" => $row['merchant_id'],
+                        "name" => $row['name'],
                         "collection_date" => $row['collection_date'],
                         "total_items" => $row['total_items'],
                         "status" => $row['status'],
@@ -71,6 +73,7 @@ switch ($method) {
         $data = json_decode(file_get_contents("php://input"));
         if (!empty($data->merchant_id) && !empty($data->collection_date) && !empty($data->total_items)) {
             $collection->merchant_id = $data->merchant_id;
+            $collection->name = $data->name;
             $collection->collection_date = $data->collection_date;
             $collection->total_items = $data->total_items;
             $collection->status = $data->status ?? 0; // Status par défaut à 0 si non fourni
@@ -100,9 +103,10 @@ switch ($method) {
         if (!empty($data->collection_id) && !empty($data->merchant_id) && !empty($data->collection_date) && !empty($data->total_items)) {
             $collection->collection_id = $data->collection_id;
             $collection->merchant_id = $data->merchant_id;
+            $collection->name = $data->name;
             $collection->collection_date = $data->collection_date;
             $collection->total_items = $data->total_items;
-            $collection->status = isset($data->status) ? $data->status : '0'; // Inclure le statut
+            $collection->status = isset($data->status) ? $data->status : null; // Inclure le statut
 
             if ($collection->update()) {
                 http_response_code(200);
@@ -113,7 +117,7 @@ switch ($method) {
             }
         } else {
             http_response_code(400);
-            echo json_encode(array("message" => "Incomplete data. Please provide all required fields."));
+            echo json_encode(array("message" => "Incomplete data. Please provide all required fields.", "data" => $data));
         }
         break;
 

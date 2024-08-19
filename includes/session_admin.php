@@ -2,8 +2,9 @@
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../index.html");
+    header("Location: ../../index.html");
+    exit();
+} else if (!isset($_SESSION['role']) || $_SESSION['role'] !== "admin") {
+    header("Location: ../../index.html");
     exit();
 }
-
-?>

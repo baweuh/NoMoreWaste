@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Volunteers-related functions
 function loadVolunteers() {
-  fetch("../api/volunteers.php")
+  fetch("../../api/volunteers.php")
     .then((response) => response.json())
     .then((data) => {
       console.log("Loaded volunteers:", data); // Check what is returned
@@ -60,7 +60,7 @@ function handleVolunteerFormSubmit(event) {
 
   const method = formData.volunteer_id ? "PUT" : "POST";
   const url =
-    "../api/volunteers.php" +
+    "../../api/volunteers.php" +
     (formData.volunteer_id ? `?id=${formData.volunteer_id}` : "");
 
   fetch(url, {
@@ -79,7 +79,7 @@ function handleVolunteerFormSubmit(event) {
 }
 
 function editVolunteer(id) {
-  fetch(`../api/volunteers.php?id=${id}`)
+  fetch(`../../api/volunteers.php?id=${id}`)
     .then((response) => response.json())
     .then((data) => {
       document.getElementById("formTitle").innerText = "Edit Volunteer";
@@ -97,7 +97,7 @@ function editVolunteer(id) {
 
 function deleteVolunteer(id) {
   if (confirm("Are you sure you want to delete this volunteer?")) {
-    fetch(`../api/volunteers.php?id=${id}`, {
+    fetch(`../../api/volunteers.php?id=${id}`, {
       method: "DELETE",
     })
       .then((response) => response.json())

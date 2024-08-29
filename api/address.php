@@ -1,13 +1,14 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: POST, GET");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 require_once '../includes/Database.php';
 require_once '../class/Delivery.php';
 require_once '../class/Panier.php';
+require_once '../class/Service.php';
 require('../fpdf/fpdf.php');
 session_start();
 
@@ -15,61 +16,124 @@ $database = new Database();
 $db = $database->getConnection();
 $delivery = new Delivery($db);
 $panier = new Panier($db);
+$service = new Service($db);
+// ... (les headers et inclusions restent inchangés)
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-if ($method === 'POST') {
-    $data = json_decode(file_get_contents("php://input"), true);
+switch ($method) {
+    case 'GET':
+        // Récupérer la liste des services
+        $stmt = $service->Read();
+        $num = $stmt->rowCount();
 
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        http_response_code(400);
-        echo json_encode(array("message" => "Invalid JSON data."));
-        exit();
-    }
+        if ($num > 0) {
+            $services_arr = array();
+            $services_arr["services"] = array();
 
-    $errors = [];
-    
-    // Valider et assigner les données
-    if (empty($data['customer_id'])) {
-        $errors[] = "Customer ID is required";
-    } else {
-        $delivery->customer_id = $data['customer_id'];
-    }
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                extract($row);
+                $service_item = array(
+                    "service_id" => $service_id,
+                    "name" => $name,
+                    // Ajoutez d'autres colonnes si nécessaire
+                );
 
-    if (empty($data['recipient_type'])) {
-        $errors[] = "Recipient type is required";
-    } else {
-        $delivery->recipient_type = $data['recipient_type'];
-    }
+                array_push($services_arr["services"], $service_item);
+            }
 
-    if (empty($data['address'])) {
-        $errors[] = "Address is required";
-    } else {
-        $delivery->address = $data['address'];
-    }
+            http_response_code(200);
+            echo json_encode($services_arr);
+        } else {
+            http_response_code(404);
+            echo json_encode(array("message" => "No services found."));
+        }
+        break;
 
-    if (empty($data['city'])) {
-        $errors[] = "City is required";
-    } else {
-        $delivery->city = $data['city'];
-    }
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"), true);
 
-    if (empty($data['zipcode'])) {
-        $errors[] = "Postal code is required";
-    } else {
-        $delivery->zipcode = $data['zipcode'];
-    }
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400);
+            echo json_encode(array("message" => "Invalid JSON data."));
+            exit();
+        }
 
-    // Si pas d'erreurs, procéder à l'ajout
-    if (empty($errors)) {
-        // Ajouter la tournée
+        $errors = [];
+
+        // Valider et assigner les données
+        if (empty($data['customer_id'])) {
+            $errors[] = "Customer ID is required";
+        } else {
+            $delivery->customer_id = $data['customer_id'];
+        }
+
+        if (empty($data['recipient_type'])) {
+            $errors[] = "Recipient type is required";
+        } else {
+            $delivery->recipient_type = $data['recipient_type'];
+        }
+
+        if (empty($data['address'])) {
+            $errors[] = "Address is required";
+        } else {
+            $delivery->address = $data['address'];
+        }
+
+        if (empty($data['city'])) {
+            $errors[] = "City is required";
+        } else {
+            $delivery->city = $data['city'];
+        }
+
+        if (empty($data['zipcode'])) {
+            $errors[] = "Postal code is required";
+        } else {
+            $delivery->zipcode = $data['zipcode'];
+        }
+
+        if (!empty($errors)) {
+            http_response_code(400);
+            echo json_encode(array("message" => "Validation errors", "errors" => $errors));
+            exit();
+        }
+
+        // Si pas d'erreurs, procéder à l'ajout de la livraison
         if ($delivery->AddTournee()) {
-            // Récupérer l'ID de la tournée récemment ajoutée
             $delivery->delivery_id = $db->lastInsertId();
 
             // Ajouter ou mettre à jour l'adresse pour la tournée
             if ($delivery->addAddress()) {
-                // Générer le PDF du panier
+
+                if (!empty($data['services']) && is_array($data['services'])) {
+                    foreach ($data['services'] as $service_id) {
+                        // Vérifiez que $service_id est bien défini
+                        if (!empty($service_id) && is_numeric($service_id)) {
+                            if ($service->exists($service_id)) {
+                                // Associer le service à la livraison
+                                $delivery->addServiceToDelivery($service_id);
+                            } else {
+                                // Le service n'existe pas dans la base de données
+                                http_response_code(400);
+                                echo json_encode(array("message" => "Service ID $service_id does not exist."));
+                                exit();
+                            }
+                        } else {
+                            // Gérer le cas où $service_id est vide ou non numérique
+                            http_response_code(400);
+                            echo json_encode(array("message" => "Invalid service ID detected."));
+                            exit();
+                        }
+                    }
+                } else {
+                    // Gérer le cas où aucun service n'a été sélectionné ou le tableau est vide
+                    http_response_code(400);
+                    echo json_encode(array("message" => "No services selected."));
+                    exit();
+                }
+
+
+                // Récupérer les articles du panier et générer le PDF...
                 $stmt = $panier->ReadByCustomerId($delivery->customer_id);
 
                 if ($stmt->rowCount() > 0) {
@@ -133,9 +197,10 @@ if ($method === 'POST') {
             http_response_code(500);
             echo json_encode(array("message" => "Unable to create delivery"));
         }
-    } else {
-        http_response_code(400);
-        echo json_encode(array("message" => "Incomplete data.", "errors" => $errors));
-    }
+        break;
+
+    default:
+        http_response_code(405);
+        echo json_encode(array("message" => "Method not allowed."));
+        break;
 }
-?>

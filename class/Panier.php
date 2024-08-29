@@ -33,6 +33,14 @@ class Panier
         return $stmt;
     }
 
+    public function Read()
+    {
+        $query = "SELECT * FROM " . $this->panier;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
     public function ReadOne($panier_id)
     {
         $query = "SELECT * FROM " . $this->panier . " WHERE panier_id = :panier_id";
@@ -40,6 +48,34 @@ class Panier
         $stmt->bindParam(":panier_id", $panier_id);
         $stmt->execute();
         return $stmt;
+    }
+
+    public function Create()
+    {
+        $query = "INSERT INTO " . $this->panier . " (customer_id, product_id, quantity) VALUES (:customer_id, :product_id, :quantity)";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':customer_id', $this->customer_id);
+        $stmt->bindParam(':product_id', $this->product_id);
+        $stmt->bindParam(':quantity', $this->quantity);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    public function update($panier_id, $quantity) {
+        $query = "UPDATE " . $this->panier . " SET quantity = :quantity WHERE panier_id = :panier_id";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':panier_id', $panier_id);
+        $stmt->bindParam(':quantity', $quantity);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
     }
 
     // Ajouter un produit au panier
@@ -97,19 +133,44 @@ class Panier
     // Supprimer un produit du panier
     public function removeProduct()
     {
-        $query = "DELETE FROM " . $this->panier . " WHERE panier_id = :panier_id";
+        // Commencez par récupérer l'ID du produit associé au panier
+        $query = "SELECT product_id FROM " . $this->panier . " WHERE panier_id = :panier_id";
         $stmt = $this->conn->prepare($query);
-
+    
         // Bind des valeurs
         $stmt->bindParam(':panier_id', $this->panier_id);
-
+    
         // Exécuter la requête
         if ($stmt->execute()) {
-            return true;
+            $product = $stmt->fetch(PDO::FETCH_ASSOC);
+            $productId = $product['product_id'];
+    
+            // Incrémenter la quantité du produit dans la table product
+            $updateQuery = "UPDATE produits SET quantity = quantity + 1 WHERE product_id = :product_id";
+            $updateStmt = $this->conn->prepare($updateQuery);
+    
+            // Bind de l'ID du produit
+            $updateStmt->bindParam(':product_id', $productId);
+    
+            // Exécuter la requête de mise à jour
+            if ($updateStmt->execute()) {
+                // Maintenant, supprimez le produit du panier
+                $deleteQuery = "DELETE FROM " . $this->panier . " WHERE panier_id = :panier_id";
+                $deleteStmt = $this->conn->prepare($deleteQuery);
+    
+                // Bind des valeurs
+                $deleteStmt->bindParam(':panier_id', $this->panier_id);
+    
+                // Exécuter la requête de suppression
+                if ($deleteStmt->execute()) {
+                    return true;
+                }
+            }
         }
-
+    
         return false;
     }
+    
 
     // Vider le panier pour un client donné (par exemple, après un paiement)
     public function emptyCart($customer_id)

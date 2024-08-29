@@ -26,7 +26,8 @@ switch ($method) {
                 $user_arr = array(
                     "user_id" => $user->user_id,
                     "username" => $user->username,
-                    "role" => $user->role
+                    "role" => $user->role,
+                    "statut" => $user->statut
                 );
                 http_response_code(200);
                 echo json_encode($user_arr);
@@ -43,7 +44,8 @@ switch ($method) {
                     $user_item = array(
                         "user_id" => $row['user_id'],
                         "username" => $row['username'],
-                        "role" => $row['role']
+                        "role" => $row['role'],
+                        "statut" => $row['statut']
                     );
                     array_push($users_arr, $user_item);
                 }
@@ -120,4 +122,3 @@ switch ($method) {
         echo json_encode(array("message" => "Method not allowed."));
         break;
 }
-?>

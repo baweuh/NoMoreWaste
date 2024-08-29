@@ -1,5 +1,6 @@
 <?php
-class Volunteer {
+class Volunteer
+{
     private $conn;
     private $table_name = "benevoles";
 
@@ -10,18 +11,21 @@ class Volunteer {
     public $skills;
     public $status;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    public function read() {
+    public function read()
+    {
         $query = "SELECT * FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
 
-    public function readOne() {
+    public function readOne()
+    {
         $query = "SELECT * FROM " . $this->table_name . " WHERE volunteer_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $this->volunteer_id);
@@ -29,7 +33,8 @@ class Volunteer {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function create() {
+    public function create()
+    {
         $query = "INSERT INTO " . $this->table_name . " (name, email, phone, skills, status) VALUES (:name, :email, :phone, :skills, :status)";
         $stmt = $this->conn->prepare($query);
 
@@ -42,7 +47,8 @@ class Volunteer {
         return $stmt->execute();
     }
 
-    public function update() {
+    public function update()
+    {
         $query = "UPDATE " . $this->table_name . " SET name = :name, email = :email, phone = :phone, skills = :skills, status = :status WHERE volunteer_id = :volunteer_id";
         $stmt = $this->conn->prepare($query);
 
@@ -56,11 +62,23 @@ class Volunteer {
         return $stmt->execute();
     }
 
-    public function delete() {
+    public function delete()
+    {
         $query = "DELETE FROM " . $this->table_name . " WHERE volunteer_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $this->volunteer_id);
         return $stmt->execute();
     }
+
+    // Function to get volunteer ID based on user_id
+    function getVolunteerId($userId, $db)
+    {
+        $query = "SELECT volunteer_id FROM Benevoles WHERE user_id = :user_id LIMIT 1";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['volunteer_id'] : null;
+    }
 }
-?>

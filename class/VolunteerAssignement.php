@@ -78,5 +78,27 @@ class VolunteerAssignment
 
         return $stmt->execute();
     }
+
+    public function registerForService($volunteer_id, $service_id)
+    {
+        $query = "INSERT INTO Benevoles_Services (volunteer_id, service_id, status) 
+                  VALUES (:volunteer_id, :service_id, 'Enregistré')";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':volunteer_id', $volunteer_id);
+        $stmt->bindParam(':service_id', $service_id);
+
+        return $stmt->execute();
+    }
+
+    public function RemoveService($volunteer_id, $service_id)
+    {
+        $query = "DELETE FROM " . $this->table_name . " 
+                 WHERE volunteer_id = :volunteer_id 
+                 AND service_id = :service_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':volunteer_id', $volunteer_id);
+        $stmt->bindParam(':service_id', $service_id);
+
+        return $stmt->execute();
+    }
 }
-?>

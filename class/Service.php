@@ -13,7 +13,7 @@ class Service
         $this->conn = $db;
     }
 
-    public function read()
+    public function Read()
     {
         $query = "SELECT * FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
@@ -21,7 +21,7 @@ class Service
         return $stmt;
     }
 
-    public function readOne()
+    public function ReadOne()
     {
         $query = "SELECT * FROM " . $this->table_name . " WHERE service_id = ?";
         $stmt = $this->conn->prepare($query);
@@ -35,7 +35,7 @@ class Service
         }
     }
 
-    public function create()
+    public function Create()
     {
         $query = "INSERT INTO " . $this->table_name . " (name, description) VALUES (:name, :description)";
         $stmt = $this->conn->prepare($query);
@@ -46,7 +46,7 @@ class Service
         return $stmt->execute();
     }
 
-    public function update()
+    public function Update()
     {
         $query = "UPDATE " . $this->table_name . " SET name = :name, description = :description WHERE service_id = :service_id";
         $stmt = $this->conn->prepare($query);
@@ -58,7 +58,7 @@ class Service
         return $stmt->execute();
     }
 
-    public function delete()
+    public function Delete()
     {
         $query = "DELETE FROM " . $this->table_name . " WHERE service_id = ?";
         $stmt = $this->conn->prepare($query);
@@ -66,5 +66,23 @@ class Service
 
         return $stmt->execute();
     }
+
+    public function exists($service_id) {
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE service_id = :service_id";
+
+        // Préparer la requête
+        $stmt = $this->conn->prepare($query);
+
+        // Lier le service_id
+        $stmt->bindParam(":service_id", $service_id, PDO::PARAM_INT);
+
+        // Exécuter la requête
+        $stmt->execute();
+
+        // Obtenir le nombre de lignes
+        $count = $stmt->fetchColumn();
+
+        // Retourner true si le service existe, sinon false
+        return $count > 0;
+    }
 }
-?>

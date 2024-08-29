@@ -18,13 +18,28 @@ if (isset($data->username) && isset($data->password)) {
     if ($user->login($username, $password)) {
         $_SESSION['role'] = $user->getRole();
         $_SESSION['user_id'] = $user->user_id;
+        $_SESSION['username'] = $user->username;
+        $_SESSION['statut'] = $user->statut;
 
-        echo json_encode([
-            "success" => true, 
-            "message" => "Connexion réussie.", 
-            "role" => $_SESSION['role'],
-            "user_id" => $_SESSION['user_id']
-        ]);
+        if ($_SESSION['statut'] == 0) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Compte en cours de vérification"
+            ]);
+        } else if ($_SESSION['statut'] == 2) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Compte refusé ou banni par l'admin"
+            ]);
+        } else {
+            echo json_encode([
+                "success" => true, 
+                "message" => "Connexion réussie.", 
+                "role" => $_SESSION['role'],
+                "user_id" => $_SESSION['user_id'],
+                "username" => $_SESSION['username']
+            ]);
+        }
     } else {
         echo json_encode([
             "success" => false, 

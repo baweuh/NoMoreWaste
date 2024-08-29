@@ -49,6 +49,7 @@ include('../../includes/session.php');
     <button onclick="loadTournees(0)">En cours de préparation</button>
     <button onclick="loadTournees(1)">En livraison</button>
     <button onclick="loadTournees(2)">Livré</button>
+    <button onclick="loadTournees(3)">Annulé</button>
     <button onclick="loadTournees()">Tout afficher</button>
     
     <table id="tourneesTable">

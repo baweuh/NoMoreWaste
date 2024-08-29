@@ -8,6 +8,7 @@ class User
     public $username;
     public $password;
     public $role;
+    public $statut;
 
     public function __construct($db)
     {
@@ -24,7 +25,7 @@ class User
 
     public function readOne()
     {
-        $query = "SELECT user_id, username, role FROM " . $this->table_name . " WHERE user_id = :user_id LIMIT 0,1";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE user_id = :user_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':user_id', $this->user_id);
         if ($stmt->execute()) {
@@ -36,19 +37,20 @@ class User
 
     public function create()
     {
-        $query = "INSERT INTO " . $this->table_name . " (username, password, role) VALUES (:username, :password, :role)";
+        $query = "INSERT INTO " . $this->table_name . " (username, password, role, statut) VALUES (:username, :password, :role, :statut)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':role', $this->role);
+        $stmt->bindParam(':statut', $this->statut);
 
         return $stmt->execute();
     }
 
     public function update()
     {
-        $query = "UPDATE " . $this->table_name . " SET username = :username, role = :role" . (!empty($this->password) ? ", password = :password" : "") . " WHERE user_id = :user_id";
+        $query = "UPDATE " . $this->table_name . " SET username = :username, role = :role, statut = :statut" . (!empty($this->password) ? ", password = :password" : "") . " WHERE user_id = :user_id";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':user_id', $this->user_id);
@@ -57,6 +59,7 @@ class User
             $stmt->bindParam(':password', $this->password);
         }
         $stmt->bindParam(':role', $this->role);
+        $stmt->bindParam(':statut', $this->statut);
 
         return $stmt->execute();
     }
@@ -139,7 +142,7 @@ class User
 
     public function login($username, $password)
     {
-        $query = "SELECT user_id, password, role FROM " . $this->table_name . " WHERE username = :username";
+        $query = "SELECT user_id, username, password, role, statut FROM " . $this->table_name . " WHERE username = :username";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':username', $username);
 
@@ -149,10 +152,12 @@ class User
                 if (password_verify($password, $row['password'])) {
                     $this->role = $row['role'];
                     $this->user_id = $row['user_id'];
-                    return true;
+                    $this->username = $row['username'];
+                    $this->statut = $row['statut'];
+                        return true;
+                    }
                 }
+                return false;
             }
         }
-        return false;
-    }
 }

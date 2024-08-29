@@ -4,13 +4,15 @@ USE fight_food_waste;
 
 CREATE TABLE Commercants (
     merchant_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
     name VARCHAR(100) NOT NULL,
     address VARCHAR(255),
     phone VARCHAR(15),
     email VARCHAR(100),
     membership_start_date DATE,
     membership_end_date DATE,
-    renewal_reminder_sent BOOLEAN DEFAULT FALSE
+    renewal_reminder_sent BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE Collectes (
@@ -35,29 +37,26 @@ CREATE TABLE Produits (
     FOREIGN KEY (collection_id) REFERENCES Collectes(collection_id)
 );
 
-CREATE TABLE Stocks (
-    stock_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    quantity INT,
-    location VARCHAR(255),
-    FOREIGN KEY (product_id) REFERENCES Produits(product_id)
-);
-
 CREATE TABLE Clients (
     customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100),
-    phone VARCHAR(15)
+    phone VARCHAR(15),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE Tournees (
     delivery_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
     delivery_date DATE NOT NULL,
     recipient_type VARCHAR(50),
-    customer_id INT,
     status VARCHAR(50),
     pdf_report_path TEXT,
-    FOREIGN KEY (customer_id) REFERENCES Clients(customer_id)
+    notes TEXT,
+    start_time TIME,
+    end_time TIME,
+    FOREIGN KEY (customer_id) REFERENCES Clients(customer_id),
 );
 
 CREATE TABLE Services (
@@ -68,19 +67,19 @@ CREATE TABLE Services (
 
 CREATE TABLE Benevoles (
     volunteer_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100),
     phone VARCHAR(15),
     skills TEXT,
-    status VARCHAR(50)
+    status VARCHAR(50),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE Benevoles_Services (
     assignment_id INT AUTO_INCREMENT PRIMARY KEY,
     volunteer_id INT NOT NULL,
     service_id INT NOT NULL,
-    task VARCHAR(255),
-    date DATE,
     status VARCHAR(50),
     FOREIGN KEY (volunteer_id) REFERENCES Benevoles(volunteer_id),
     FOREIGN KEY (service_id) REFERENCES Services(service_id)
@@ -102,4 +101,14 @@ CREATE TABLE Panier (
   PRIMARY KEY (`panier_id`),
   KEY `customer_id` (`customer_id`),
   KEY `product_id` (`product_id`)
+);
+
+CREATE TABLE Tournees_benevoles (
+    delivery_id INT,
+    volunteer_id INT,
+    service_id INT,
+    date DATETIME,
+    FOREIGN KEY (delivery_id) REFERENCES Tournees(delivery_id),
+    FOREIGN KEY (volunteer_id) REFERENCES Benevoles(volunteer_id)
+    FOREIGN KEY (service_id) REFERENCES Services(service_id)
 );

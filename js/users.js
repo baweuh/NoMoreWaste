@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (
-    window.location.pathname.includes("users.html")
-  ) {
+  if (window.location.pathname.includes("users.php")) {
     loadUsers();
     const userForm = document.getElementById("userForm");
     if (userForm) {
@@ -14,26 +12,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function loadUsers() {
   fetch("../../api/users.php")
-    .then((response) => response.json())
-    .then((data) => {
+    .then(response => response.json())
+    .then(data => {
       console.log("Loaded users:", data);
       const tableBody = document.querySelector("#usersTableBody");
       tableBody.innerHTML = "";
-      data.forEach((user) => {
+      data.forEach(user => {
         const row = document.createElement("tr");
         row.innerHTML = `
-              <td>${user.user_id}</td>
-              <td>${user.username}</td>
-              <td>${user.role}</td>
-              <td>
-                <button onclick="editUser(${user.user_id})">Edit</button>
-                <button onclick="deleteUser(${user.user_id})">Delete</button>
-              </td>
-            `;
+          <td>${user.user_id}</td>
+          <td>${user.username}</td>
+          <td>${getRoleName(user.role)}</td>
+          <td>${getStatutName(user.statut)}</td>
+          <td>
+            <button onclick="editUser(${user.user_id})">Edit</button>
+            <button onclick="deleteUser(${user.user_id})">Delete</button>
+          </td>
+        `;
         tableBody.appendChild(row);
       });
     })
-    .catch((error) => console.error("Error loading users:", error));
+    .catch(error => console.error("Error loading users:", error));
 }
 
 function showUserCreateForm() {
@@ -52,12 +51,11 @@ function handleUserFormSubmit(event) {
     username: document.getElementById("username").value,
     password: document.getElementById("password").value,
     role: document.getElementById("role").value,
+    statut: document.getElementById("statut").value,
   };
 
   const method = formData.user_id ? "PUT" : "POST";
-  const url =
-    "../../api/users.php" +
-    (formData.user_id ? `?id=${formData.user_id}` : "");
+  const url = "../../api/users.php" + (formData.user_id ? `?id=${formData.user_id}` : "");
 
   fetch(url, {
     method: method,
@@ -66,37 +64,76 @@ function handleUserFormSubmit(event) {
     },
     body: JSON.stringify(formData),
   })
-    .then((response) => response.json())
-    .then((data) => {
+    .then(response => response.json())
+    .then(data => {
       loadUsers();
       document.getElementById("userFormContainer").style.display = "none";
     })
-    .catch((error) => console.error("Error:", error));
+    .catch(error => console.error("Error:", error));
 }
 
 function editUser(id) {
   fetch(`../../api/users.php?id=${id}`)
-    .then((response) => response.json())
-    .then((data) => {
-      document.getElementById("formTitle").innerText = "Edit User";
-      document.getElementById("userId").value = data.user_id;
-      document.getElementById("username").value = data.username;
-      document.getElementById("role").value = data.role;
-      document.getElementById("formSubmitButton").innerText = "Update";
-      document.getElementById("userFormContainer").style.display = "block";
+    .then(response => response.json())
+    .then(data => {
+      const userIdElem = document.getElementById("userId");
+      const usernameElem = document.getElementById("username");
+      const roleElem = document.getElementById("role");
+      const statutElem = document.getElementById("statut");
+      
+      if (userIdElem && usernameElem && roleElem && statutElem) {
+        document.getElementById("formTitle").innerText = "Edit User";
+        userIdElem.value = data.user_id;
+        usernameElem.value = data.username;
+        roleElem.value = data.role;
+        statutElem.value = data.statut;
+        document.getElementById("formSubmitButton").innerText = "Update";
+        document.getElementById("userFormContainer").style.display = "block";
+      } else {
+        console.error("One or more form elements are missing in the DOM.");
+      }
     })
-    .catch((error) => console.error("Error:", error));
+    .catch(error => console.error("Error:", error));
 }
 
+
 function deleteUser(id) {
-  if (confirm("Are you sure you want to delete this user?")) {
+  if (confirm("Vous êtes sur le point de supprimer cet utilisateur.")) {
     fetch(`../../api/users.php?id=${id}`, {
       method: "DELETE",
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         loadUsers();
       })
-      .catch((error) => console.error("Error:", error));
+      .catch(error => console.error("Error:", error));
+  }
+}
+
+function getRoleName(role) {
+  switch (role) {
+    case 'admin':
+      return 'Administrateur';
+    case 'clients':
+      return 'Client';
+    case 'commercants':
+      return 'Commerçant';
+    case 'benevoles':
+      return 'Bénévole';
+    default:
+      return 'Inconnu';
+  }
+}
+
+function getStatutName(statut) {
+  switch (statut) {
+    case 1:
+      return 'Validé';
+    case 0:
+      return 'En attente';
+    case 2:
+      return 'Refusé';
+    default:
+      return 'Inconnu';
   }
 }

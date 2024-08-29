@@ -20,6 +20,8 @@ $db = $database->getConnection();
 
 $product = new Product($db);
 
+$date = date("Y-m-d");
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
@@ -89,6 +91,12 @@ switch ($method) {
             $product->quantity = $data->quantity;
             $product->expiry_date = $data->expiry_date;
             $product->collection_id = $data->collection_id;
+
+            if ($product->expiry_date < $date) {
+                http_response_code(503);
+                echo json_encode(array("message" => "Date d'expiration passée"));
+                break;
+            }
 
             if ($product->create()) {
                 http_response_code(201);

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (window.location.pathname.includes("collections.html")) {
+  if (window.location.pathname.includes("collections.php")) {
     loadCollections();
     loadMerchants(); // Charge les commerçants pour le menu déroulant
     const collectionForm = document.getElementById("collectionForm");

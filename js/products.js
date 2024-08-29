@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (window.location.pathname.includes("products.html")) {
+  if (window.location.pathname.includes("products.php")) {
     loadProducts();
     loadCollections(); // Load collections when the page is loaded
     const productForm = document.getElementById("productForm");

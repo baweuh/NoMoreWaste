@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (window.location.pathname.includes("services.html")) {
+  if (window.location.pathname.includes("services.php")) {
     loadServices();
     const serviceForm = document.getElementById("serviceForm");
     if (serviceForm) {

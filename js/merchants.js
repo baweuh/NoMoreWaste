@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (window.location.pathname.includes("merchants.html")) {
+  if (window.location.pathname.includes("merchants.php")) {
     loadMerchants();
     const merchantForm = document.getElementById("merchantForm");
     if (merchantForm) {

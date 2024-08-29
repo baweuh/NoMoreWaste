@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Charger les stocks et les produits lorsque le DOM est prêt
-  if (window.location.pathname.includes("stocks.html")) {
+  if (window.location.pathname.includes("stocks.php")) {
     loadProducts();
     loadStocks();
     

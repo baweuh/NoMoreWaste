@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (window.location.pathname.includes("volunteers.html")) {
+  if (window.location.pathname.includes("volunteers.php")) {
     loadVolunteers();
     const volunteerForm = document.getElementById("volunteerForm");
     if (volunteerForm) {
